@@ -182,12 +182,11 @@ async function fetchLiveFromSheets() {
   document.getElementById('liveIndicator').style.display = 'none';
 
   try {
-    // allorigins רק כדי לעקוף CORS של Google Sheets
-    const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(SHEET_CSV)}&timestamp=${Date.now()}`;
-    const res = await fetch(proxy, { signal: AbortSignal.timeout(12000) });
+    // Google Apps Script proxy — מחזיר CSV ישירות
+    const proxy = `https://script.google.com/macros/s/AKfycbzwLRMWi5b9xNo26vIcBdFhiHyDd64YYgwP3Z3pX7FV4gD5prbN493RJMwKB8AJH47_/exec`;
+    const res = await fetch(proxy, { signal: AbortSignal.timeout(15000) });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const json = await res.json();
-    const csv = json.contents;
+    const csv = await res.text();
 
     // פירוש CSV
     const rows = csv.trim().split('\n').slice(1); // דילוג על כותרת
