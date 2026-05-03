@@ -1,180 +1,3 @@
-<!DOCTYPE html>
-<html lang="he" dir="rtl">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>סקטורי S&P 500 – משקיענית</title>
-<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
-<style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Heebo', sans-serif; direction: rtl; background: #fff; color: #1a1a1a; }
-  .dashboard { max-width: 900px; margin: 0 auto; padding: 0 0 2rem; }
-  .header { padding: 1.5rem 1.5rem 1rem; border-bottom: 0.5px solid #e5e5e5; }
-  .header-top { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px; }
-  .blog-name { font-size: 11px; font-weight: 400; color: #888; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 4px; }
-  .title { font-size: 22px; font-weight: 700; color: #111; }
-  .subtitle { font-size: 13px; color: #777; margin-top: 4px; }
-  .header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
-  .date-badge { font-size: 12px; font-weight: 500; color: #555; background: #f5f5f5; border: 0.5px solid #e0e0e0; border-radius: 20px; padding: 4px 12px; white-space: nowrap; }
-  .live-indicator { display: flex; align-items: center; gap: 5px; font-size: 11px; color: #16a34a; }
-  .live-dot { width: 7px; height: 7px; border-radius: 50%; background: #16a34a; animation: pulse 2s infinite; }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
-  .metrics-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 1rem 1.5rem; }
-  @media(max-width:600px){ .metrics-row { grid-template-columns: repeat(2,1fr); } }
-  .metric-card { background: #f8f8f8; border-radius: 8px; padding: 10px 12px; }
-  .metric-label { font-size: 11px; color: #888; margin-bottom: 4px; }
-  .metric-value { font-size: 17px; font-weight: 500; color: #111; }
-  .up { color: #16a34a; }
-  .down { color: #dc2626; }
-  .year-selector { display: flex; gap: 8px; padding: 0 1.5rem 0.75rem; align-items: center; flex-wrap: wrap; }
-  .year-label { font-size: 12px; color: #888; }
-  .year-btn { font-size: 12px; padding: 4px 14px; border-radius: 20px; border: 0.5px solid #ddd; background: transparent; color: #666; cursor: pointer; font-family: 'Heebo', sans-serif; transition: all 0.15s; }
-  .year-btn.active { background: #111; color: #fff; border-color: #111; }
-  .year-btn:hover:not(.active) { background: #f5f5f5; }
-  .live-tag { font-size: 9px; background: #dcfce7; color: #166534; border-radius: 8px; padding: 1px 6px; margin-right: 3px; }
-  .chart-area { padding: 0 1.5rem; position: relative; }
-  .chart-wrapper { position: relative; width: 100%; height: 420px; }
-  .tooltip-box { position: absolute; background: #fff; border: 0.5px solid #ddd; border-radius: 10px; padding: 10px 14px; font-size: 12px; pointer-events: none; display: none; z-index: 20; min-width: 165px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
-  .tt-name { font-size: 13px; font-weight: 500; color: #111; margin-bottom: 5px; }
-  .tt-row { display: flex; justify-content: space-between; gap: 16px; color: #888; margin-top: 3px; }
-  .tt-val { font-weight: 500; color: #111; }
-  .legend { display: flex; gap: 20px; padding: 0.75rem 1.5rem 0; flex-wrap: wrap; }
-  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #888; }
-  .legend-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
-  .footer-note { padding: 0.75rem 1.5rem 0; font-size: 11px; color: #aaa; line-height: 1.7; }
-  .loading-overlay { position: absolute; inset: 0; background: rgba(255,255,255,0.88); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 30; gap: 10px; }
-  .spinner { width: 28px; height: 28px; border: 2px solid #eee; border-top-color: #111; border-radius: 50%; animation: spin 0.8s linear infinite; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .loading-text { font-size: 13px; color: #888; }
-  .error-box { background: #fef2f2; border: 0.5px solid #fecaca; border-radius: 8px; padding: 10px 16px; margin: 0.5rem 1.5rem; font-size: 12px; color: #dc2626; display: none; }
-</style>
-</head>
-<body>
-<div class="dashboard">
-
-  <div class="header">
-    <div class="header-top">
-      <div>
-        <div class="blog-name">משקיענית · Dashboard</div>
-        <div class="title">סקטורי S&P 500 לפי משקל</div>
-        <div class="subtitle">תשואה שנתית (YTD) ומשקל כל סקטור במדד</div>
-      </div>
-      <div class="header-right">
-        <div class="date-badge" id="dateBadge">טוען...</div>
-        <div class="live-indicator" id="liveIndicator" style="display:none;">
-          <div class="live-dot"></div><span>נתונים חיים</span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="metrics-row" id="metricsRow">
-    <div class="metric-card"><div class="metric-label">תשואת S&P 500</div><div class="metric-value">—</div></div>
-    <div class="metric-card"><div class="metric-label">סקטורים עודפים</div><div class="metric-value">—</div></div>
-    <div class="metric-card"><div class="metric-label">סקטור מוביל</div><div class="metric-value">—</div></div>
-    <div class="metric-card"><div class="metric-label">סקטור מפגר</div><div class="metric-value">—</div></div>
-  </div>
-
-  <div class="year-selector">
-    <span class="year-label">שנה:</span>
-    <button class="year-btn" onclick="switchYear('2023',this)">2023</button>
-    <button class="year-btn" onclick="switchYear('2024',this)">2024</button>
-    <button class="year-btn" onclick="switchYear('2025',this)">2025</button>
-    <button class="year-btn active" onclick="switchYear('live',this)">2026 <span class="live-tag">LIVE</span></button>
-  </div>
-
-  <div class="error-box" id="errorBox"></div>
-
-  <div class="chart-area">
-    <div class="chart-wrapper">
-      <canvas id="bubbleChart"></canvas>
-      <div class="loading-overlay" id="loadingOverlay">
-        <div class="spinner"></div>
-        <div class="loading-text">שולף נתונים...</div>
-      </div>
-      <div class="tooltip-box" id="tooltipBox">
-        <div class="tt-name" id="ttName"></div>
-        <div class="tt-row"><span>תשואה YTD</span><span class="tt-val" id="ttRet"></span></div>
-        <div class="tt-row"><span>משקל במדד</span><span class="tt-val" id="ttWt"></span></div>
-        <div class="tt-row"><span>ETF</span><span class="tt-val" id="ttEtf"></span></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="legend">
-    <div class="legend-item"><div class="legend-dot" style="background:#16a34a;"></div>תשואה עודפת על המדד</div>
-    <div class="legend-item"><div class="legend-dot" style="background:#3b82f6;"></div>תשואה נמוכה מהמדד</div>
-    <div class="legend-item"><div class="legend-dot" style="background:#f59e0b;width:17px;height:17px;"></div>S&P 500 כולו</div>
-  </div>
-
-  <div class="footer-note" id="footerNote">
-    * גודל הבועה = משקל הסקטור במדד. הקו המקווקו = תשואת המדד הכוללת.
-  </div>
-</div>
-
-<script>
-const API_KEY = 'AyFVRyhNc2bnZTCFeEoNmFg48uHVMWMP';
-
-const STATIC = {
-  '2023': { date:'31/12/23', indexReturn:24.23, sectors:[
-    {name:'טכנולוגיה',etf:'XLK',ret:57.8,weight:28.9},
-    {name:'שירותי תקשורת',etf:'XLC',ret:52.6,weight:8.5},
-    {name:'שירות לצרכן',etf:'XLY',ret:28.1,weight:10.7},
-    {name:'תעשייה',etf:'XLI',ret:17.3,weight:8.9},
-    {name:'חומרים',etf:'XLB',ret:11.8,weight:2.6},
-    {name:'פיננסים',etf:'XLF',ret:10.2,weight:13.8},
-    {name:'נדל"ן',etf:'XLRE',ret:8.9,weight:2.4},
-    {name:'בריאות',etf:'XLV',ret:2.1,weight:12.5},
-    {name:'צריכה בסיסית',etf:'XLP',ret:0.5,weight:6.8},
-    {name:'אנרגיה',etf:'XLE',ret:-1.3,weight:4.3},
-    {name:'תשתיות',etf:'XLU',ret:-7.1,weight:2.6},
-  ]},
-  '2024': { date:'31/12/24', indexReturn:27.66, sectors:[
-    {name:'פיננסים',etf:'XLF',ret:37.91,weight:13.2},
-    {name:'שירותי תקשורת',etf:'XLC',ret:36.52,weight:8.9},
-    {name:'תשתיות',etf:'XLU',ret:33.83,weight:2.3},
-    {name:'תעשייה',etf:'XLI',ret:27.51,weight:8.4},
-    {name:'שירות לצרכן',etf:'XLY',ret:25.04,weight:10.1},
-    {name:'טכנולוגיה',etf:'XLK',ret:22.04,weight:31.5},
-    {name:'צריכה בסיסית',etf:'XLP',ret:17.86,weight:6.0},
-    {name:'אנרגיה',etf:'XLE',ret:16.65,weight:3.9},
-    {name:'נדל"ן',etf:'XLRE',ret:15.03,weight:2.2},
-    {name:'חומרים',etf:'XLB',ret:12.22,weight:2.4},
-    {name:'בריאות',etf:'XLV',ret:9.28,weight:11.6},
-  ]},
-  '2025': { date:'31/12/25', indexReturn:17.72, sectors:[
-    {name:'שירותי תקשורת',etf:'XLC',ret:23.08,weight:9.1},
-    {name:'טכנולוגיה',etf:'XLK',ret:24.61,weight:31.8},
-    {name:'תעשייה',etf:'XLI',ret:19.35,weight:8.3},
-    {name:'תשתיות',etf:'XLU',ret:16.02,weight:2.4},
-    {name:'פיננסים',etf:'XLF',ret:14.90,weight:13.5},
-    {name:'בריאות',etf:'XLV',ret:14.50,weight:11.8},
-    {name:'חומרים',etf:'XLB',ret:9.94,weight:2.4},
-    {name:'אנרגיה',etf:'XLE',ret:7.88,weight:3.7},
-    {name:'שירות לצרכן',etf:'XLY',ret:7.37,weight:10.3},
-    {name:'נדל"ן',etf:'XLRE',ret:2.63,weight:2.2},
-    {name:'צריכה בסיסית',etf:'XLP',ret:1.52,weight:6.5},
-  ]},
-};
-
-const SECTORS = [
-  {name:'טכנולוגיה',    etf:'XLK',  weight:31.8},
-  {name:'פיננסים',      etf:'XLF',  weight:13.5},
-  {name:'בריאות',       etf:'XLV',  weight:11.8},
-  {name:'שירות לצרכן',  etf:'XLY',  weight:10.3},
-  {name:'שירותי תקשורת',etf:'XLC',  weight:9.1},
-  {name:'תעשייה',       etf:'XLI',  weight:8.3},
-  {name:'צריכה בסיסית', etf:'XLP',  weight:6.5},
-  {name:'אנרגיה',       etf:'XLE',  weight:3.7},
-  {name:'חומרים',       etf:'XLB',  weight:2.4},
-  {name:'תשתיות',       etf:'XLU',  weight:2.4},
-  {name:'נדל"ן',        etf:'XLRE', weight:2.2},
-];
-
-let chartInstance = null;
-
-// ─── FMP: שליפת תשואת YTD ישירות ────────────────────────────────────────────
 async function fetchYTD_FMP(ticker) {
   const url = `https://financialmodelingprep.com/api/v3/stock-price-change/${ticker}?apikey=${API_KEY}`;
   const res = await fetch(url, { signal: AbortSignal.timeout(10000) });
@@ -182,37 +5,37 @@ async function fetchYTD_FMP(ticker) {
   if (!json || !json[0]) throw new Error(`No data for ${ticker}`);
   return json[0].ytd; // FMP מחזיר שדה ytd ישירות באחוזים
 }
-
+ 
 async function fetchAllLive() {
   showLoading(true);
   document.getElementById('errorBox').style.display = 'none';
   document.getElementById('liveIndicator').style.display = 'none';
-
+ 
   try {
     const tickers = [...SECTORS.map(s => s.etf), 'SPY'];
     const results = await Promise.all(tickers.map(t => fetchYTD_FMP(t)));
-
+ 
     const indexYTD = results[results.length - 1];
     const sectors = SECTORS.map((s, i) => ({
       name: s.name, etf: s.etf, weight: s.weight, ret: results[i]
     }));
-
+ 
     const today = new Date();
     const dateStr = today.toLocaleDateString('he-IL', {day:'2-digit', month:'2-digit', year:'2-digit'});
     document.getElementById('dateBadge').textContent = dateStr;
     document.getElementById('liveIndicator').style.display = 'flex';
-
+ 
     buildMetrics({ sectors, indexReturn: indexYTD });
     buildChart({ sectors, indexReturn: indexYTD });
     document.getElementById('footerNote').textContent =
       `* גודל הבועה = משקל הסקטור במדד. הקו המקווקו = תשואת המדד (${indexYTD.toFixed(2)}%). נתונים חיים מ-Financial Modeling Prep, נכון לסגירה האחרונה.`;
-
+ 
   } catch(e) {
     console.error('FMP API error:', e);
     const eb = document.getElementById('errorBox');
     eb.style.display = 'block';
     eb.textContent = '⚠️ לא ניתן לשלוף נתונים חיים כרגע. מוצגים נתוני גיבוי (Q1 2026).';
-
+ 
     // Fallback
     const fallback = {
       date: '31/03/26',
@@ -237,13 +60,13 @@ async function fetchAllLive() {
   }
   showLoading(false);
 }
-
+ 
 function switchYear(year, btn) {
   document.querySelectorAll('.year-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   document.getElementById('liveIndicator').style.display = 'none';
   document.getElementById('errorBox').style.display = 'none';
-
+ 
   if (year === 'live') {
     fetchAllLive();
   } else {
@@ -255,7 +78,7 @@ function switchYear(year, btn) {
       `* גודל הבועה = משקל הסקטור במדד. הקו המקווקו = תשואת המדד הכוללת. נתונים לסוף שנת ${year}.`;
   }
 }
-
+ 
 function buildMetrics({sectors, indexReturn}) {
   const out = sectors.filter(s => s.ret > indexReturn).length;
   const top = sectors.reduce((a,b) => a.ret > b.ret ? a : b);
@@ -272,29 +95,29 @@ function buildMetrics({sectors, indexReturn}) {
       <div class="metric-value ${bot.ret < 0 ? 'down' : ''}" style="font-size:13px;">${bot.etf} ${fmt(bot.ret)}</div></div>
   `;
 }
-
+ 
 function buildChart({sectors, indexReturn}) {
   const minW = Math.min(...sectors.map(s => s.weight));
   const maxW = Math.max(...sectors.map(s => s.weight));
   const scaleR = w => 8 + ((w - minW) / (maxW - minW)) * 38;
-
+ 
   const bData = sectors.map(s => ({
     x: s.weight, y: s.ret, r: scaleR(s.weight),
     label: s.etf, name: s.name, weight: s.weight, ret: s.ret
   }));
-
+ 
   const outData   = bData.filter(b => b.ret >  indexReturn);
   const underData = bData.filter(b => b.ret <= indexReturn);
-
+ 
   const allRet = sectors.map(s => s.ret);
   const minRet = Math.min(...allRet), maxRet = Math.max(...allRet);
   const allWt  = sectors.map(s => s.weight);
   const minWt  = Math.min(...allWt), maxWt = Math.max(...allWt);
   const rPad = (maxRet - minRet) * 0.2;
   const wPad = (maxWt - minWt) * 0.15;
-
+ 
   if (chartInstance) chartInstance.destroy();
-
+ 
   chartInstance = new Chart(document.getElementById('bubbleChart'), {
     type: 'bubble',
     data: { datasets: [
@@ -394,11 +217,11 @@ function buildChart({sectors, indexReturn}) {
     ]
   });
 }
-
+ 
 function showLoading(on) {
   document.getElementById('loadingOverlay').style.display = on ? 'flex' : 'none';
 }
-
+ 
 // אתחול
 fetchAllLive();
 </script>
