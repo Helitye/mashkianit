@@ -22,16 +22,16 @@
   .dashboard { max-width: 860px; margin: 0 auto; background: #fff; min-height: 100vh; }
 
   /* HEADER */
-  .header { background: var(--dark); padding: 1rem 1.4rem; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .header { background: #C4A882; padding: 1.1rem 1.4rem; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
   .logo-area { display: flex; align-items: center; gap: 10px; }
-  .logo-img { height: 40px; width: auto; filter: brightness(0) invert(1); opacity: 0.9; }
-  .hdiv { width: 1px; height: 26px; background: rgba(255,255,255,0.18); }
-  .htxt .lbl { font-size: 10px; color: var(--gold-light); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 2px; }
-  .htxt .ttl { font-size: 14px; font-weight: 700; color: #fff; }
+  .logo-img { height: 58px; width: auto; filter: brightness(0) invert(1); opacity: 0.95; }
+  .hdiv { width: 1px; height: 36px; background: rgba(255,255,255,0.35); }
+  .htxt .lbl { font-size: 10px; color: rgba(255,255,255,0.8); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 2px; }
+  .htxt .ttl { font-size: 15px; font-weight: 700; color: #fff; }
   .hright { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
-  .date-badge { font-size: 11px; font-weight: 500; color: var(--gold-light); background: rgba(255,255,255,0.07); border: 0.5px solid rgba(201,168,76,0.35); border-radius: 20px; padding: 3px 10px; white-space: nowrap; }
-  .live-ind { display: none; align-items: center; gap: 5px; font-size: 10px; color: #6ee7a0; font-weight: 500; }
-  .live-dot { width: 6px; height: 6px; border-radius: 50%; background: #6ee7a0; animation: pulse 2s infinite; }
+  .date-badge { font-size: 11px; font-weight: 500; color: #fff; background: rgba(255,255,255,0.2); border: 0.5px solid rgba(255,255,255,0.4); border-radius: 20px; padding: 3px 10px; white-space: nowrap; }
+  .live-ind { display: none; align-items: center; gap: 5px; font-size: 10px; color: #fff; font-weight: 500; }
+  .live-dot { width: 6px; height: 6px; border-radius: 50%; background: #fff; animation: pulse 2s infinite; }
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
   .gold-strip { height: 3px; background: linear-gradient(90deg,var(--gold),var(--gold-light),var(--gold)); }
 
@@ -79,12 +79,20 @@
   .legend { display: flex; gap: 14px; flex-wrap: wrap; }
   .li { display: flex; align-items: center; gap: 5px; font-size: 11px; color: #888; font-weight: 500; }
   .ld { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-  .fnote { font-size: 10px; color: #bbb; line-height: 1.6; }
+  .fnote { font-size: 13px; color: #666; line-height: 1.7; font-weight: 500; }
+
+
+  /* SLIDER */
+  .slider-area { padding: 6px 14px 8px; background: #FDFBF8; border-top: 1px solid var(--border); display:none; align-items: center; gap: 10px; }
+  .slider-label { font-size: 11px; color: #aaa; white-space: nowrap; flex-shrink: 0; }
+  .y-slider { flex: 1; -webkit-appearance: none; height: 3px; background: var(--border); border-radius: 2px; outline: none; cursor: pointer; }
+  .y-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--gold); cursor: pointer; border: 2px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.2); }
+  .y-slider::-moz-range-thumb { width: 16px; height: 16px; border-radius: 50%; background: var(--gold); cursor: pointer; border: 2px solid #fff; }
 
   /* MOBILE */
   @media(max-width:600px){
     .header { padding: 0.8rem 1rem; }
-    .logo-img { height: 32px; }
+    .logo-img { height: 46px; }
     .htxt .ttl { font-size: 12px; }
     .hdiv, .htxt .lbl { display: none; }
     .metrics-row { grid-template-columns: repeat(2,1fr); }
@@ -155,6 +163,12 @@
     </div>
   </div>
 
+  <div class="slider-area" id="sliderArea">
+    <div class="slider-label">הזזת תצוגה: <span id="sliderVal"></span></div>
+    <input type="range" class="y-slider" id="ySlider" min="-1" max="1" step="0.05" value="0"
+      oninput="shiftYAxis(this.value)">
+  </div>
+
   <div class="bottom">
     <div class="legend">
       <div class="li"><div class="ld" style="background:var(--green)"></div>תשואה עודפת על המדד</div>
@@ -175,6 +189,29 @@ const STATIC={
   '2025':{date:'31/12/25',indexReturn:17.72,sectors:[{name:'טכנולוגיה',etf:'XLK',ret:24.61,weight:31.8},{name:'שירותי תקשורת',etf:'XLC',ret:23.08,weight:9.1},{name:'תעשייה',etf:'XLI',ret:19.35,weight:8.3},{name:'תשתיות',etf:'XLU',ret:16.02,weight:2.4},{name:'פיננסים',etf:'XLF',ret:14.90,weight:13.5},{name:'בריאות',etf:'XLV',ret:14.50,weight:11.8},{name:'חומרים',etf:'XLB',ret:9.94,weight:2.4},{name:'אנרגיה',etf:'XLE',ret:7.88,weight:3.7},{name:'שירות לצרכן',etf:'XLY',ret:7.37,weight:10.3},{name:'נדל"ן',etf:'XLRE',ret:2.63,weight:2.2},{name:'צריכה בסיסית',etf:'XLP',ret:1.52,weight:6.5}]},
 };
 let CI=null;
+
+
+let yShift = 0;
+let currentChartData = null;
+
+function shiftYAxis(val) {
+  yShift = parseFloat(val);
+  if (!currentChartData) return;
+  const sectors = currentChartData.sectors;
+  const indexReturn = currentChartData.indexReturn;
+  const allRet = sectors.map(s => s.ret);
+  const minRet = Math.min(...allRet), maxRet = Math.max(...allRet);
+  const range = maxRet - minRet;
+  const offset = yShift * range * 0.8;
+  const rPad = range * 0.22;
+  if (CI) {
+    CI.options.scales.y.min = minRet - rPad + offset;
+    CI.options.scales.y.max = maxRet + rPad + offset;
+    CI.update('none');
+  }
+  const pct = Math.round(val * 100);
+  document.getElementById('sliderVal').textContent = (pct > 0 ? '+' : '') + pct + '%';
+}
 
 async function fetchLive(){
   load(true);
@@ -248,6 +285,10 @@ function buildChart({sectors,indexReturn}){
   const rPad=(maxR-minR)*0.22;
   const xMax=maxW*2.5;
   const spyX=maxW*1.8;
+  currentChartData = {sectors, indexReturn};
+  yShift = 0;
+  const sl = document.getElementById("ySlider");
+  if(sl){ sl.value = 0; document.getElementById("sliderVal").textContent = "0%"; document.getElementById("sliderArea").style.display = "flex"; }
   if(CI)CI.destroy();
   const tc='#aaa',gc='rgba(0,0,0,0.04)',fs=mob?9:11;
   CI=new Chart(document.getElementById('bubbleChart'),{
