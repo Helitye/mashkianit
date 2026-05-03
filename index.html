@@ -71,7 +71,7 @@
     <div class="metric-card"><div class="metric-label">תשואת S&P 500</div><div class="metric-value">—</div></div>
     <div class="metric-card"><div class="metric-label">סקטורים עודפים</div><div class="metric-value">—</div></div>
     <div class="metric-card"><div class="metric-label">סקטור מוביל</div><div class="metric-value">—</div></div>
-    <div class="metric-card"><div class="metric-label">סקטור מפגר</div><div class="metric-value">—</div></div>
+    <div class="metric-card"><div class="metric-label">סקטור חלש</div><div class="metric-value">—</div></div>
   </div>
 
   <div class="year-selector">
@@ -279,7 +279,7 @@ function buildMetrics({sectors, indexReturn}) {
       <div class="metric-value">${out} / 11</div></div>
     <div class="metric-card"><div class="metric-label">סקטור מוביל</div>
       <div class="metric-value up" style="font-size:13px;">${top.etf} ${fmt(top.ret)}</div></div>
-    <div class="metric-card"><div class="metric-label">סקטור מפגר</div>
+    <div class="metric-card"><div class="metric-label">סקטור חלש</div>
       <div class="metric-value ${bot.ret < 0 ? 'down' : ''}" style="font-size:13px;">${bot.etf} ${fmt(bot.ret)}</div></div>
   `;
 }
