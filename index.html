@@ -22,9 +22,9 @@
   .dashboard { max-width: 860px; margin: 0 auto; background: #fff; min-height: 100vh; }
 
   /* HEADER */
-  .header { background: #C4A882; padding: 1.1rem 1.4rem; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .header { background: #C4A882; padding: 1.2rem 1.4rem; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
   .logo-area { display: flex; align-items: center; gap: 10px; }
-  .logo-img { height: 70px; width: auto; filter: brightness(0) invert(1); opacity: 0.95; }
+  .logo-img { height: 84px; width: auto; filter: brightness(0) invert(1); opacity: 0.97; drop-shadow: 0 1px 4px rgba(0,0,0,0.15); }
   .hdiv { width: 1px; height: 36px; background: rgba(255,255,255,0.35); }
   .htxt .lbl { font-size: 10px; color: rgba(255,255,255,0.8); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 2px; }
   .htxt .ttl { font-size: 15px; font-weight: 700; color: #fff; }
@@ -94,7 +94,7 @@
   /* MOBILE */
   @media(max-width:600px){
     .header { padding: 0.8rem 1rem; }
-    .logo-img { height: 56px; }
+    .logo-img { height: 68px; }
     .htxt .ttl { font-size: 12px; }
     .hdiv, .htxt .lbl { display: none; }
     .metrics-row { grid-template-columns: repeat(2,1fr); }
@@ -170,7 +170,7 @@
 
   <div class="slider-area" id="sliderArea">
     <div class="slider-label">הזזת תצוגה: <span id="sliderVal"></span></div>
-    <input type="range" class="y-slider" id="ySlider" min="-10" max="10" step="0.5" value="0"
+    <input type="range" class="y-slider" id="ySlider" min="-20" max="20" step="0.5" value="0"
       oninput="shiftYAxis(this.value)">
   </div>
 
