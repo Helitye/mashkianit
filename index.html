@@ -24,11 +24,13 @@
   /* HEADER */
   .header { background: #C4A882; padding: 1.1rem 1.4rem; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
   .logo-area { display: flex; align-items: center; gap: 10px; }
-  .logo-img { height: 58px; width: auto; filter: brightness(0) invert(1); opacity: 0.95; }
+  .logo-img { height: 70px; width: auto; filter: brightness(0) invert(1); opacity: 0.95; }
   .hdiv { width: 1px; height: 36px; background: rgba(255,255,255,0.35); }
   .htxt .lbl { font-size: 10px; color: rgba(255,255,255,0.8); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 2px; }
   .htxt .ttl { font-size: 15px; font-weight: 700; color: #fff; }
-  .hright { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
+  .hright { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+  .back-btn { font-size: 11px; font-weight: 600; color: #fff; background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.4); border-radius: 20px; padding: 4px 12px; text-decoration: none; white-space: nowrap; transition: background 0.15s; font-family: 'Heebo', sans-serif; cursor: pointer; }
+  .back-btn:hover { background: rgba(255,255,255,0.3); }
   .date-badge { font-size: 11px; font-weight: 500; color: #fff; background: rgba(255,255,255,0.2); border: 0.5px solid rgba(255,255,255,0.4); border-radius: 20px; padding: 3px 10px; white-space: nowrap; }
   .live-ind { display: none; align-items: center; gap: 5px; font-size: 10px; color: #fff; font-weight: 500; }
   .live-dot { width: 6px; height: 6px; border-radius: 50%; background: #fff; animation: pulse 2s infinite; }
@@ -92,7 +94,7 @@
   /* MOBILE */
   @media(max-width:600px){
     .header { padding: 0.8rem 1rem; }
-    .logo-img { height: 46px; }
+    .logo-img { height: 56px; }
     .htxt .ttl { font-size: 12px; }
     .hdiv, .htxt .lbl { display: none; }
     .metrics-row { grid-template-columns: repeat(2,1fr); }
@@ -123,8 +125,11 @@
       </div>
     </div>
     <div class="hright">
-      <div class="date-badge" id="dateBadge">טוען...</div>
-      <div class="live-ind" id="liveInd"><div class="live-dot"></div><span>נתונים חיים</span></div>
+      <a class="back-btn" href="https://www.mashkianit.co.il" target="_blank">← בחזרה לבלוג משקיענית</a>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <div class="date-badge" id="dateBadge">טוען...</div>
+        <div class="live-ind" id="liveInd"><div class="live-dot"></div><span>נתונים חיים</span></div>
+      </div>
     </div>
   </div>
 
@@ -165,7 +170,7 @@
 
   <div class="slider-area" id="sliderArea">
     <div class="slider-label">הזזת תצוגה: <span id="sliderVal"></span></div>
-    <input type="range" class="y-slider" id="ySlider" min="-1" max="1" step="0.05" value="0"
+    <input type="range" class="y-slider" id="ySlider" min="-10" max="10" step="0.5" value="0"
       oninput="shiftYAxis(this.value)">
   </div>
 
@@ -201,15 +206,21 @@ function shiftYAxis(val) {
   const indexReturn = currentChartData.indexReturn;
   const allRet = sectors.map(s => s.ret);
   const minRet = Math.min(...allRet), maxRet = Math.max(...allRet);
-  const range = maxRet - minRet;
-  const offset = yShift * range * 0.8;
-  const rPad = range * 0.22;
+  const allWt = sectors.map(s => s.weight);
+  const minWt = Math.min(...allWt), maxWt = Math.max(...allWt);
+  const yRange = maxRet - minRet;
+  const xRange = maxWt - minWt;
+  const yOffset = yShift * yRange * 0.12;
+  const xOffset = yShift * xRange * 0.12;
+  const rPad = yRange * 0.22;
   if (CI) {
-    CI.options.scales.y.min = minRet - rPad + offset;
-    CI.options.scales.y.max = maxRet + rPad + offset;
+    CI.options.scales.y.min = minRet - rPad + yOffset;
+    CI.options.scales.y.max = maxRet + rPad + yOffset;
+    CI.options.scales.x.min = minWt - 1 + xOffset;
+    CI.options.scales.x.max = maxWt * 2.5 + xOffset;
     CI.update('none');
   }
-  const pct = Math.round(val * 100);
+  const pct = Math.round(val * 10);
   document.getElementById('sliderVal').textContent = (pct > 0 ? '+' : '') + pct + '%';
 }
 
