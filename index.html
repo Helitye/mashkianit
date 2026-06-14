@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="he" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>דשבורד סקטורים – משקיענית</title>
+<title>S&P 500 Sectors Dashboard – Mashkianit</title>
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
@@ -18,13 +18,13 @@
     --blue: #2C5F8A;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Heebo', sans-serif; direction: rtl; background: var(--cream); color: var(--dark); -webkit-font-smoothing: antialiased; }
+  body { font-family: 'Heebo', sans-serif; direction: ltr; background: var(--cream); color: var(--dark); -webkit-font-smoothing: antialiased; }
   .dashboard { max-width: 860px; margin: 0 auto; background: #fff; min-height: 100vh; }
 
   /* HEADER */
   .header { background: #C4A882; padding: 1.2rem 1.4rem; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
   .logo-area { display: flex; align-items: center; gap: 10px; }
-  .logo-img { height: 84px; width: auto; filter: brightness(0) invert(1); opacity: 0.97; drop-shadow: 0 1px 4px rgba(0,0,0,0.15); }
+  .logo-img { height: 84px; width: auto; opacity: 1; }
   .hdiv { width: 1px; height: 36px; background: rgba(255,255,255,0.35); }
   .htxt .lbl { font-size: 10px; color: rgba(255,255,255,0.8); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 2px; }
   .htxt .ttl { font-size: 15px; font-weight: 700; color: #fff; }
@@ -39,8 +39,8 @@
 
   /* METRICS */
   .metrics-row { display: grid; grid-template-columns: repeat(4,1fr); border-bottom: 1px solid var(--border); }
-  .mc { padding: 13px 14px; border-left: 1px solid var(--border); }
-  .mc:last-child { border-left: none; }
+  .mc { padding: 13px 14px; border-right: 1px solid var(--border); }
+  .mc:last-child { border-right: none; }
   .ml { font-size: 10px; font-weight: 500; color: #999; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 4px; }
   .mv { font-size: 17px; font-weight: 700; color: var(--dark); line-height: 1; }
   .mv.up { color: var(--green); }
@@ -56,7 +56,7 @@
   .ltag { font-size: 8px; font-weight: 700; background: var(--gold); color: var(--dark); border-radius: 8px; padding: 1px 5px; letter-spacing: 0.04em; }
 
   /* ERROR */
-  .err-box { background: #fef9f2; border-right: 3px solid var(--gold); padding: 9px 14px; margin: 10px 14px 0; font-size: 12px; color: #8a6a1a; display: none; border-radius: 0 5px 5px 0; }
+  .err-box { background: #fef9f2; border-left: 3px solid var(--gold); padding: 9px 14px; margin: 10px 14px 0; font-size: 12px; color: #8a6a1a; display: none; border-radius: 5px 0 0 5px; }
 
   /* CHART */
   .chart-area { padding: 6px 10px 2px; position: relative; }
@@ -91,6 +91,32 @@
   .y-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--gold); cursor: pointer; border: 2px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.2); }
   .y-slider::-moz-range-thumb { width: 16px; height: 16px; border-radius: 50%; background: var(--gold); cursor: pointer; border: 2px solid #fff; }
 
+
+  /* TABLE */
+  .table-area { padding: 0 14px 16px; }
+  .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .data-table thead tr { border-bottom: 2px solid var(--border); }
+  .data-table thead th { padding: 8px 10px; text-align: left; font-size: 10px; font-weight: 600; color: #aaa; letter-spacing: 0.07em; text-transform: uppercase; }
+  .data-table tbody tr { border-bottom: 1px solid #f0ece6; transition: background 0.1s; }
+  .data-table tbody tr:hover { background: #FDFBF8; }
+  .data-table tbody tr.index-row { background: #faf6ee; font-weight: 700; border-bottom: 2px solid var(--border); }
+  .data-table td { padding: 8px 10px; vertical-align: middle; }
+  .td-name { font-weight: 500; color: var(--dark); }
+  .td-etf { font-size: 11px; color: #aaa; font-weight: 600; }
+  .td-ret { font-weight: 700; text-align: right; }
+  .td-ret.up { color: var(--green); }
+  .td-ret.dn { color: var(--red); }
+  .td-weight { color: #888; text-align: right; font-size: 12px; }
+  .td-bar-cell { width: 120px; }
+  .td-bar-wrap { background: #f0ece6; border-radius: 3px; height: 5px; overflow: hidden; }
+  .td-bar { height: 5px; border-radius: 3px; }
+  .dot-color { width: 9px; height: 9px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+
+  @media(max-width:600px){
+    .td-bar-cell { display: none; }
+    .data-table { font-size: 12px; }
+    .data-table td { padding: 7px 8px; }
+  }
   /* MOBILE */
   @media(max-width:600px){
     .header { padding: 0.8rem 1rem; }
@@ -99,7 +125,7 @@
     .hdiv, .htxt .lbl { display: none; }
     .metrics-row { grid-template-columns: repeat(2,1fr); }
     .mc { border-bottom: 1px solid var(--border); padding: 10px 11px; }
-    .mc:nth-child(2), .mc:nth-child(4) { border-left: none; }
+    .mc:nth-child(2), .mc:nth-child(4) { border-right: none; }
     .mc:nth-child(3), .mc:nth-child(4) { border-bottom: none; }
     .mv { font-size: 15px; }
     .chart-wrap { height: 290px; }
@@ -117,18 +143,18 @@
 
   <div class="header">
     <div class="logo-area">
-      <img class="logo-img" src="https://static.wixstatic.com/media/894475_0fbb7c240f6e4744a0d012d6566a4ce6~mv2.png" alt="משקיענית">
+      <img class="logo-img" src="logo_en.png" alt="Mashkianit">
       <div class="hdiv"></div>
       <div class="htxt">
         <div class="lbl">Dashboard</div>
-        <div class="ttl">סקטורי S&P 500 לפי משקל</div>
+        <div class="ttl">S&P 500 Sectors by Weight</div>
       </div>
     </div>
     <div class="hright">
-      <a class="back-btn" href="https://www.mashkianit.co.il" target="_blank">← בחזרה לבלוג משקיענית</a>
+      <a class="back-btn" href="https://www.mashkianit.co.il" target="_blank">← Back to Mashkianit Blog</a>
       <div style="display:flex;gap:8px;align-items:center;">
-        <div class="date-badge" id="dateBadge">טוען...</div>
-        <div class="live-ind" id="liveInd"><div class="live-dot"></div><span>נתונים חיים</span></div>
+        <div class="date-badge" id="dateBadge">Loading...</div>
+        <div class="live-ind" id="liveInd"><div class="live-dot"></div><span>Live Data</span></div>
       </div>
     </div>
   </div>
@@ -136,14 +162,14 @@
   <div class="gold-strip"></div>
 
   <div class="metrics-row" id="metricsRow">
-    <div class="mc"><div class="ml">תשואת S&P 500</div><div class="mv">—</div></div>
-    <div class="mc"><div class="ml">סקטורים עודפים</div><div class="mv">—</div></div>
-    <div class="mc"><div class="ml">סקטור מוביל</div><div class="mv">—</div></div>
-    <div class="mc"><div class="ml">סקטור חלש</div><div class="mv">—</div></div>
+    <div class="mc"><div class="ml">S&P 500 Return</div><div class="mv">—</div></div>
+    <div class="mc"><div class="ml">Outperforming</div><div class="mv">—</div></div>
+    <div class="mc"><div class="ml">Top Sector</div><div class="mv">—</div></div>
+    <div class="mc"><div class="ml">Weakest Sector</div><div class="mv">—</div></div>
   </div>
 
   <div class="year-bar">
-    <span class="ylbl">שנה:</span>
+    <span class="ylbl">Year:</span>
     <button class="ybtn" onclick="switchYear('2023',this)">2023</button>
     <button class="ybtn" onclick="switchYear('2024',this)">2024</button>
     <button class="ybtn" onclick="switchYear('2025',this)">2025</button>
@@ -157,41 +183,57 @@
       <canvas id="bubbleChart"></canvas>
       <div class="loading" id="loadingEl">
         <div class="spin"></div>
-        <div class="spin-txt">שולף נתונים...</div>
+        <div class="spin-txt">Loading data...</div>
       </div>
       <div class="ttbox" id="ttbox">
         <div class="ttn" id="ttn"></div>
-        <div class="ttr"><span>תשואה YTD</span><span class="ttv" id="ttr"></span></div>
-        <div class="ttr"><span>משקל במדד</span><span class="ttv" id="ttw"></span></div>
+        <div class="ttr"><span>YTD Return</span><span class="ttv" id="ttr"></span></div>
+        <div class="ttr"><span>Index Weight</span><span class="ttv" id="ttw"></span></div>
         <div class="ttr"><span>ETF</span><span class="ttv" id="tte"></span></div>
       </div>
     </div>
   </div>
 
   <div class="slider-area" id="sliderArea">
-    <div class="slider-label">הזזת תצוגה: <span id="sliderVal"></span></div>
+    <div class="slider-label">Pan View: <span id="sliderVal"></span></div>
     <input type="range" class="y-slider" id="ySlider" min="-20" max="20" step="0.5" value="0"
       oninput="shiftYAxis(this.value)">
   </div>
+  <div class="table-area" id="tableArea" style="display:none;">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th style="width:32px;"></th>
+          <th>Sector</th>
+          <th>ETF</th>
+          <th style="text-align:right;">YTD Return</th>
+          <th style="text-align:right;">Weight</th>
+          <th class="td-bar-cell">vs Index</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </div>
+
 
   <div class="bottom">
     <div class="legend">
-      <div class="li"><div class="ld" style="background:var(--green)"></div>תשואה עודפת על המדד</div>
-      <div class="li"><div class="ld" style="background:var(--blue)"></div>תשואה נמוכה מהמדד</div>
-      <div class="li"><div class="ld" style="background:var(--gold);width:13px;height:13px;"></div>S&P 500 כולו</div>
+      <div class="li"><div class="ld" style="background:var(--green)"></div>Outperforming the Index</div>
+      <div class="li"><div class="ld" style="background:var(--blue)"></div>Underperforming the Index</div>
+      <div class="li"><div class="ld" style="background:var(--gold);width:13px;height:13px;"></div>S&P 500 Index</div>
     </div>
-    <div class="fnote" id="fnote">* גודל הבועה = משקל הסקטור במדד</div>
+    <div class="fnote" id="fnote">* Bubble size = sector index weight</div>
   </div>
 
 </div>
 <script>
 const PROXY='https://script.google.com/macros/s/AKfycbzwLRMWi5b9xNo26vIcBdFhiHyDd64YYgwP3Z3pX7FV4gD5prbN493RJMwKB8AJH47_/exec';
 const W={XLK:31.8,XLF:13.5,XLV:11.8,XLY:10.3,XLC:9.1,XLI:8.3,XLP:6.5,XLE:3.7,XLB:2.4,XLU:2.4,XLRE:2.2};
-const N={XLK:'טכנולוגיה',XLF:'פיננסים',XLV:'בריאות',XLY:'שירות לצרכן',XLC:'שירותי תקשורת',XLI:'תעשייה',XLP:'צריכה בסיסית',XLE:'אנרגיה',XLB:'חומרים',XLU:'תשתיות',XLRE:'נדל"ן'};
+const N={XLK:'Technology',XLF:'Financials',XLV:'Health Care',XLY:'Cons. Discretionary',XLC:'Comm. Services',XLI:'Industrials',XLP:'Cons. Staples',XLE:'Energy',XLB:'Materials',XLU:'Utilities',XLRE:'Real Estate'};
 const STATIC={
-  '2023':{date:'31/12/23',indexReturn:24.23,sectors:[{name:'טכנולוגיה',etf:'XLK',ret:57.8,weight:28.9},{name:'שירותי תקשורת',etf:'XLC',ret:52.6,weight:8.5},{name:'שירות לצרכן',etf:'XLY',ret:28.1,weight:10.7},{name:'תעשייה',etf:'XLI',ret:17.3,weight:8.9},{name:'חומרים',etf:'XLB',ret:11.8,weight:2.6},{name:'פיננסים',etf:'XLF',ret:10.2,weight:13.8},{name:'נדל"ן',etf:'XLRE',ret:8.9,weight:2.4},{name:'בריאות',etf:'XLV',ret:2.1,weight:12.5},{name:'צריכה בסיסית',etf:'XLP',ret:0.5,weight:6.8},{name:'אנרגיה',etf:'XLE',ret:-1.3,weight:4.3},{name:'תשתיות',etf:'XLU',ret:-7.1,weight:2.6}]},
-  '2024':{date:'31/12/24',indexReturn:27.66,sectors:[{name:'פיננסים',etf:'XLF',ret:37.91,weight:13.2},{name:'שירותי תקשורת',etf:'XLC',ret:36.52,weight:8.9},{name:'תשתיות',etf:'XLU',ret:33.83,weight:2.3},{name:'תעשייה',etf:'XLI',ret:27.51,weight:8.4},{name:'שירות לצרכן',etf:'XLY',ret:25.04,weight:10.1},{name:'טכנולוגיה',etf:'XLK',ret:22.04,weight:31.5},{name:'צריכה בסיסית',etf:'XLP',ret:17.86,weight:6.0},{name:'אנרגיה',etf:'XLE',ret:16.65,weight:3.9},{name:'נדל"ן',etf:'XLRE',ret:15.03,weight:2.2},{name:'חומרים',etf:'XLB',ret:12.22,weight:2.4},{name:'בריאות',etf:'XLV',ret:9.28,weight:11.6}]},
-  '2025':{date:'31/12/25',indexReturn:17.72,sectors:[{name:'טכנולוגיה',etf:'XLK',ret:24.61,weight:31.8},{name:'שירותי תקשורת',etf:'XLC',ret:23.08,weight:9.1},{name:'תעשייה',etf:'XLI',ret:19.35,weight:8.3},{name:'תשתיות',etf:'XLU',ret:16.02,weight:2.4},{name:'פיננסים',etf:'XLF',ret:14.90,weight:13.5},{name:'בריאות',etf:'XLV',ret:14.50,weight:11.8},{name:'חומרים',etf:'XLB',ret:9.94,weight:2.4},{name:'אנרגיה',etf:'XLE',ret:7.88,weight:3.7},{name:'שירות לצרכן',etf:'XLY',ret:7.37,weight:10.3},{name:'נדל"ן',etf:'XLRE',ret:2.63,weight:2.2},{name:'צריכה בסיסית',etf:'XLP',ret:1.52,weight:6.5}]},
+  '2023':{date:'31/12/23',indexReturn:24.23,sectors:[{name:'Technology',etf:'XLK',ret:57.8,weight:28.9},{name:'Comm. Services',etf:'XLC',ret:52.6,weight:8.5},{name:'Cons. Discretionary',etf:'XLY',ret:28.1,weight:10.7},{name:'Industrials',etf:'XLI',ret:17.3,weight:8.9},{name:'Materials',etf:'XLB',ret:11.8,weight:2.6},{name:'Financials',etf:'XLF',ret:10.2,weight:13.8},{name:'Real Estate',etf:'XLRE',ret:8.9,weight:2.4},{name:'Health Care',etf:'XLV',ret:2.1,weight:12.5},{name:'Cons. Staples',etf:'XLP',ret:0.5,weight:6.8},{name:'Energy',etf:'XLE',ret:-1.3,weight:4.3},{name:'Utilities',etf:'XLU',ret:-7.1,weight:2.6}]},
+  '2024':{date:'31/12/24',indexReturn:27.66,sectors:[{name:'Financials',etf:'XLF',ret:37.91,weight:13.2},{name:'Comm. Services',etf:'XLC',ret:36.52,weight:8.9},{name:'Utilities',etf:'XLU',ret:33.83,weight:2.3},{name:'Industrials',etf:'XLI',ret:27.51,weight:8.4},{name:'Cons. Discretionary',etf:'XLY',ret:25.04,weight:10.1},{name:'Technology',etf:'XLK',ret:22.04,weight:31.5},{name:'Cons. Staples',etf:'XLP',ret:17.86,weight:6.0},{name:'Energy',etf:'XLE',ret:16.65,weight:3.9},{name:'Real Estate',etf:'XLRE',ret:15.03,weight:2.2},{name:'Materials',etf:'XLB',ret:12.22,weight:2.4},{name:'Health Care',etf:'XLV',ret:9.28,weight:11.6}]},
+  '2025':{date:'31/12/25',indexReturn:17.72,sectors:[{name:'Technology',etf:'XLK',ret:24.61,weight:31.8},{name:'Comm. Services',etf:'XLC',ret:23.08,weight:9.1},{name:'Industrials',etf:'XLI',ret:19.35,weight:8.3},{name:'Utilities',etf:'XLU',ret:16.02,weight:2.4},{name:'Financials',etf:'XLF',ret:14.90,weight:13.5},{name:'Health Care',etf:'XLV',ret:14.50,weight:11.8},{name:'Materials',etf:'XLB',ret:9.94,weight:2.4},{name:'Energy',etf:'XLE',ret:7.88,weight:3.7},{name:'Cons. Discretionary',etf:'XLY',ret:7.37,weight:10.3},{name:'Real Estate',etf:'XLRE',ret:2.63,weight:2.2},{name:'Cons. Staples',etf:'XLP',ret:1.52,weight:6.5}]},
 };
 let CI=null;
 
@@ -224,6 +266,48 @@ function shiftYAxis(val) {
   document.getElementById('sliderVal').textContent = (pct > 0 ? '+' : '') + pct + '%';
 }
 
+
+function buildTable({sectors, indexReturn}) {
+  const area = document.getElementById('tableArea');
+  const tbody = document.getElementById('tableBody');
+  if (!area || !tbody) return;
+  area.style.display = 'block';
+
+  // Sort: index first, then by return descending
+  const sorted = [...sectors].sort((a,b) => b.ret - a.ret);
+  const fmt = r => (r >= 0 ? '+' : '') + r.toFixed(2) + '%';
+  const maxAbs = Math.max(...sectors.map(s => Math.abs(s.ret)), Math.abs(indexReturn));
+
+  // Index row first
+  const idxColor = indexReturn >= 0 ? '#C9A84C' : '#C9A84C';
+  const idxBarW = Math.round((Math.abs(indexReturn) / maxAbs) * 100);
+  let rows = `<tr class="index-row">
+    <td><span class="dot-color" style="background:#C9A84C;width:11px;height:11px;"></span></td>
+    <td class="td-name">S&P 500 Index</td>
+    <td class="td-etf">SPY</td>
+    <td class="td-ret ${indexReturn>=0?'up':'dn'}">${fmt(indexReturn)}</td>
+    <td class="td-weight">—</td>
+    <td class="td-bar-cell"><div class="td-bar-wrap"><div class="td-bar" style="width:${idxBarW}%;background:#C9A84C;"></div></div></td>
+  </tr>`;
+
+  sorted.forEach(s => {
+    const isOut = s.ret > indexReturn;
+    const color = isOut ? 'var(--green)' : 'var(--blue)';
+    const barW = Math.round((Math.abs(s.ret) / maxAbs) * 100);
+    const barColor = s.ret >= 0 ? (isOut ? 'var(--green)' : 'var(--blue)') : 'var(--red)';
+    rows += `<tr>
+      <td><span class="dot-color" style="background:${color};"></span></td>
+      <td class="td-name">${s.name}</td>
+      <td class="td-etf">${s.etf}</td>
+      <td class="td-ret ${s.ret>=0?'up':'dn'}">${fmt(s.ret)}</td>
+      <td class="td-weight">${s.weight.toFixed(1)}%</td>
+      <td class="td-bar-cell"><div class="td-bar-wrap"><div class="td-bar" style="width:${barW}%;background:${barColor};"></div></div></td>
+    </tr>`;
+  });
+
+  tbody.innerHTML = rows;
+}
+
 async function fetchLive(){
   load(true);
   document.getElementById('errBox').style.display='none';
@@ -242,14 +326,14 @@ async function fetchLive(){
     document.getElementById('dateBadge').textContent=`${String(today.getDate()).padStart(2,'0')}/${String(today.getMonth()+1).padStart(2,'0')}/${String(today.getFullYear()).slice(2)}`;
     document.getElementById('liveInd').style.display='flex';
     render({sectors,indexReturn:IR});
-    document.getElementById('fnote').textContent=`* גודל הבועה = משקל הסקטור. קו מקווקו = תשואת המדד (${IR.toFixed(2)}%). מקור: Google Finance`;
+    document.getElementById('fnote').textContent=`* Bubble size = sector weight. Dashed line = index return (${IR.toFixed(2)}%). Source: Google Finance`;
   }catch(e){
     console.error(e.message);
     const eb=document.getElementById('errBox');
     eb.style.display='block';
-    eb.textContent='⚠️ לא ניתן לטעון נתונים. מוצגים נתוני גיבוי (Q1 2026).';
-    const fb={indexReturn:-4.37,sectors:[{name:'אנרגיה',etf:'XLE',ret:37.91,weight:3.7},{name:'חומרים',etf:'XLB',ret:10.68,weight:2.4},{name:'תשתיות',etf:'XLU',ret:8.25,weight:2.4},{name:'צריכה בסיסית',etf:'XLP',ret:6.13,weight:6.5},{name:'תעשייה',etf:'XLI',ret:4.55,weight:8.3},{name:'נדל"ן',etf:'XLRE',ret:1.87,weight:2.2},{name:'בריאות',etf:'XLV',ret:-4.90,weight:11.8},{name:'שירותי תקשורת',etf:'XLC',ret:-5.53,weight:9.1},{name:'טכנולוגיה',etf:'XLK',ret:-7.57,weight:31.8},{name:'שירות לצרכן',etf:'XLY',ret:-8.55,weight:10.3},{name:'פיננסים',etf:'XLF',ret:-9.40,weight:13.5}]};
-    document.getElementById('dateBadge').textContent='גיבוי Q1 2026';
+    eb.textContent='⚠️ Could not load live data. Showing backup data (Q1 2026).';
+    const fb={indexReturn:-4.37,sectors:[{name:'Energy',etf:'XLE',ret:37.91,weight:3.7},{name:'Materials',etf:'XLB',ret:10.68,weight:2.4},{name:'Utilities',etf:'XLU',ret:8.25,weight:2.4},{name:'Cons. Staples',etf:'XLP',ret:6.13,weight:6.5},{name:'Industrials',etf:'XLI',ret:4.55,weight:8.3},{name:'Real Estate',etf:'XLRE',ret:1.87,weight:2.2},{name:'Health Care',etf:'XLV',ret:-4.90,weight:11.8},{name:'Comm. Services',etf:'XLC',ret:-5.53,weight:9.1},{name:'Technology',etf:'XLK',ret:-7.57,weight:31.8},{name:'Cons. Discretionary',etf:'XLY',ret:-8.55,weight:10.3},{name:'Financials',etf:'XLF',ret:-9.40,weight:13.5}]};
+    document.getElementById('dateBadge').textContent='Backup Q1 2026';
     render(fb);
   }
   load(false);
@@ -261,12 +345,13 @@ function switchYear(yr,btn){
   document.getElementById('liveInd').style.display='none';
   document.getElementById('errBox').style.display='none';
   if(yr==='live'){fetchLive();}
-  else{const d=STATIC[yr];document.getElementById('dateBadge').textContent=d.date;render(d);document.getElementById('fnote').textContent=`* גודל הבועה = משקל הסקטור. קו מקווקו = תשואת המדד. נתונים לסוף שנת ${yr}.`;}
+  else{const d=STATIC[yr];document.getElementById('dateBadge').textContent=d.date;render(d);document.getElementById('fnote').textContent=`* Bubble size = sector weight. Dashed line = index return. Data as of end of ${yr}.`;}
 }
 
 function render({sectors,indexReturn}){
   buildMetrics({sectors,indexReturn});
   buildChart({sectors,indexReturn});
+  buildTable({sectors,indexReturn});
 }
 
 function buildMetrics({sectors,indexReturn}){
@@ -276,10 +361,10 @@ function buildMetrics({sectors,indexReturn}){
   const fmt=r=>(r>=0?'+':'')+r.toFixed(2)+'%';
   const sm=window.innerWidth<480?'12px':'13px';
   document.getElementById('metricsRow').innerHTML=`
-    <div class="mc"><div class="ml">תשואת S&P 500</div><div class="mv ${indexReturn>=0?'up':'dn'}">${fmt(indexReturn)}</div></div>
-    <div class="mc"><div class="ml">סקטורים עודפים</div><div class="mv">${out} / 11</div></div>
-    <div class="mc"><div class="ml">סקטור מוביל</div><div class="mv up" style="font-size:${sm}">${top.etf} ${fmt(top.ret)}</div></div>
-    <div class="mc"><div class="ml">סקטור חלש</div><div class="mv ${bot.ret<0?'dn':''}" style="font-size:${sm}">${bot.etf} ${fmt(bot.ret)}</div></div>`;
+    <div class="mc"><div class="ml">S&P 500 Return</div><div class="mv ${indexReturn>=0?'up':'dn'}">${fmt(indexReturn)}</div></div>
+    <div class="mc"><div class="ml">Outperforming</div><div class="mv">${out} / 11</div></div>
+    <div class="mc"><div class="ml">Top Sector</div><div class="mv up" style="font-size:${sm}">${top.etf} ${fmt(top.ret)}</div></div>
+    <div class="mc"><div class="ml">Weakest Sector</div><div class="mv ${bot.ret<0?'dn':''}" style="font-size:${sm}">${bot.etf} ${fmt(bot.ret)}</div></div>`;
 }
 
 function buildChart({sectors,indexReturn}){
@@ -329,8 +414,8 @@ function buildChart({sectors,indexReturn}){
         }}
       },
       scales:{
-        x:{title:{display:!mob,text:'משקל במדד (%)',color:tc,font:{size:10,family:'Heebo'}},min:minWt-1,max:xMax,grid:{color:gc},ticks:{color:tc,font:{size:fs},callback:v=>v.toFixed(0)+'%',maxTicksLimit:6}},
-        y:{title:{display:!mob,text:'תשואה YTD (%)',color:tc,font:{size:10,family:'Heebo'}},min:minR-rPad,max:maxR+rPad,grid:{color:gc},ticks:{color:tc,font:{size:fs},callback:v=>v.toFixed(0)+'%',maxTicksLimit:6}}
+        x:{title:{display:!mob,text:'Index Weight (%)',color:tc,font:{size:10,family:'Heebo'}},min:minWt-1,max:xMax,grid:{color:gc},ticks:{color:tc,font:{size:fs},callback:v=>v.toFixed(0)+'%',maxTicksLimit:6}},
+        y:{title:{display:!mob,text:'YTD Return (%)',color:tc,font:{size:10,family:'Heebo'}},min:minR-rPad,max:maxR+rPad,grid:{color:gc},ticks:{color:tc,font:{size:fs},callback:v=>v.toFixed(0)+'%',maxTicksLimit:6}}
       },
       layout:{padding:{top:14,right:mob?6:10,bottom:4,left:mob?2:6}}
     },
